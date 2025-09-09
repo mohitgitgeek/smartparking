@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Parking Overview</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; }
+    th { background: #f0f0f0; }
+    .status-AVAILABLE { background:#e6ffe6; }
+    .status-OCCUPIED { background:#ffe6e6; }
+    .status-RESERVED { background:#fff0cc; }
+    .status-MAINTENANCE { background:#e0e0e0; }
+  </style>
+</head>
+<body>
+  <h1>Parking Slot Overview</h1>
+  <button onclick="loadData()">Refresh</button>
+  <table id="slotsTbl">
+    <thead>
+      <tr>
+        <th>Zone</th>
+        <th>Slot</th>
+        <th>Status</th>
+        <th>Active Reservation</th>
+        <th>Open Transaction</th>
+        <th>Check-In Time</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <script>
+    async function loadData(){
+      const res = await fetch('http://localhost:8080/api/slots/overview');
+      const data = await res.json();
+      const tbody = document.querySelector('#slotsTbl tbody');
+      tbody.innerHTML='';
+      data.forEach(row=>{
+        const tr=document.createElement('tr');
+        tr.className = 'status-' + row.status;
+        tr.innerHTML = `<td>${row.zone_name}</td><td>${row.slot_number}</td><td>${row.status}</td><td>${row.active_reservation_id||''}</td><td>${row.open_transaction_id||''}</td><td>${row.check_in_time||''}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    loadData();
+  </script>
+</body>
+</html>

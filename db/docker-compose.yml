@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: smart_parking_pg
+    environment:
+      POSTGRES_DB: smart_parking
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./schema_postgres.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./sample_data.sql:/docker-entrypoint-initdb.d/02_sample.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  pg_data:
